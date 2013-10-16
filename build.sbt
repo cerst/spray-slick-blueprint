@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
     "io.spray" %%  "spray-json" % "1.2.5",
     "com.typesafe.slick" %% "slick" % "1.0.1",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
+    "c3p0" % "c3p0" % "0.9.1.2",
     // testing
     "org.scalatest" %% "scalatest" % "2.0.RC2" % "test",
     "com.typesafe.akka" %% "akka-testkit" % "2.2.0-RC1" % "test",
