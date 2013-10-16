@@ -4,7 +4,7 @@ spray-slick-blueprint
 This blueprint (partially) implements the typical book store example using
 * Spray (-routing, -json, -can) - 1.2M8
 * Slick - 1.0.1
-* PostgresQL - 9.1-901  (access configuration resides in src/main/resources/application.conf)
+* PostgreSQL - 9.1-901  (access configuration resides in src/main/resources/application.conf)
 * ScalaTest - 2.0.RC2
 
 It is build with SBT and the revolver plugin
