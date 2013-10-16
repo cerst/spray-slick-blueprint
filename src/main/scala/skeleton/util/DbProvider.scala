@@ -5,6 +5,7 @@ import scala.slick.jdbc.StaticQuery
 import skeleton.entity.{Books, Collections}
 import Database.threadLocalSession
 import com.typesafe.config.ConfigFactory
+import com.mchange.v2.c3p0.ComboPooledDataSource
 
 object DbProvider {
 
@@ -13,7 +14,12 @@ object DbProvider {
   private val database = {
     val dbConf = conf getConfig "database"
     def read(s: String): String = dbConf getString s
-    Database forURL(read("url"), driver = read("driver"), user = read("user"), password = read("password"))
+    val ds = new ComboPooledDataSource
+    ds setJdbcUrl read("url")
+    ds setDriverClass read("driver")
+    ds setUser read("user")
+    ds setPassword read("password")
+    Database forDataSource ds
   }
 
   def get = database
