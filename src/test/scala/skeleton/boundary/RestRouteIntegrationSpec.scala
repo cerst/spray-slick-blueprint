@@ -18,7 +18,7 @@ class RestRouteIntegrationSpec extends FlatSpec with Matchers with ScalatestRout
       status should equal(OK)
 
       // fails if type does not match
-      entityAs[List[Book]]
+      responseAs[List[Book]]
     }
   }
 
