@@ -13,7 +13,7 @@ class RestRouteIntegrationSpec extends FlatSpec with Matchers with ScalatestRout
 
   def actorRefFactory = system
 
-  "The rest route" should "return all books of a collection via POST to /collections/1" in {
+  "The rest route" should "return all books of a collection via GET to /collections/1" in {
     Get("/collections/1") ~> route ~> check {
       status should equal(OK)
 
