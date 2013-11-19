@@ -7,7 +7,7 @@ import skeleton.store.entity.Book
 
 object Books extends Table[Book]("store") {
 
-  def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
+  def id = column[Long]("id", O.AutoInc)
 
   def title = column[String]("title", O.DBType("VARCHAR(255)"), O.NotNull)
 
