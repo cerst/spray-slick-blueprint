@@ -26,7 +26,7 @@ object DbProvider {
   def init(reset: Boolean): Unit = {
     DbProvider.get withSession {
       if (reset)
-        StaticQuery.updateNA("drop schema public cascade;create schema public;")
+        StaticQuery updateNA "drop schema public cascade;create schema public;" execute()
       try {
         // simple check: access a table: if an exception occurs we assume that this table and all other do not exist
         (Books where (_.id === 0L)).firstOption
