@@ -11,7 +11,7 @@ object Main extends App {
 
   val service = system.actorOf(Props[DispatchRouteActor], "dispatch-route")
 
-  args.find(_ == "resetDb") match {
+  args.find(_ == "--resetDb") match {
     case Some(s) => DbProvider init true
     case None => DbProvider init false
   }
