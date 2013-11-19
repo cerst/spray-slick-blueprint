@@ -10,6 +10,8 @@ libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-actor" % "2.2.3",
     "com.typesafe.akka" %% "akka-slf4j" % "2.2.3",
     "ch.qos.logback" % "logback-classic" % "1.0.13",
+    // redirect c3p0 logging to slf4j
+    "org.slf4j" % "log4j-over-slf4j" % "1.7.5",
     "io.spray" % "spray-can" % "1.2-RC3",
     "io.spray" % "spray-routing" % "1.2-RC3",
     "io.spray" %%  "spray-json" % "1.2.5",
