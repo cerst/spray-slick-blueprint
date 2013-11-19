@@ -1,7 +1,7 @@
-package skeleton.books.control
+package skeleton.store.control
 
 import akka.actor.{Props, Actor, ActorLogging}
-import skeleton.books.entity.{BooksReq, InsertReq}
+import skeleton.store.entity.{BooksReq, InsertReq}
 
 class BooksDbFacadeActor extends Actor with ActorLogging with BooksDbFacade {
 

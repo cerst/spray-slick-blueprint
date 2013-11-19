@@ -1,9 +1,9 @@
-package skeleton.books.control
+package skeleton.store.control
 
 import scala.slick.driver.PostgresDriver.simple._
 import Database.threadLocalSession
 import skeleton.persistence.{Books, DbProvider}
-import skeleton.books.entity._
+import skeleton.store.entity._
 import skeleton.util.ErrorMsg
 
 trait BooksDbFacade {

@@ -1,7 +1,7 @@
 package skeleton.persistence
 
 import scala.slick.driver.PostgresDriver.simple._
-import skeleton.books.entity.Collection
+import skeleton.store.entity.Collection
 
 
 object Collections extends Table[Collection]("collections") {

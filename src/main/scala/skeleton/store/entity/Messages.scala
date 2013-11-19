@@ -1,4 +1,4 @@
-package skeleton.books.entity
+package skeleton.store.entity
 
 case class BooksReq(collectionId: Long)
 

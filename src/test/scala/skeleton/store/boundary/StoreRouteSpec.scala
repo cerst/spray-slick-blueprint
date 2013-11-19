@@ -1,4 +1,4 @@
-package skeleton.books.boundary
+package skeleton.store.boundary
 
 import org.scalatest.{BeforeAndAfter, Matchers, FlatSpec}
 import spray.testkit.ScalatestRouteTest
@@ -8,21 +8,21 @@ import scala.reflect.ClassTag
 import scala.concurrent.Future
 import akka.actor.ActorRefFactory
 import skeleton.testutil.MockMsgHandler
-import skeleton.books.entity.{BooksReq, IdRsp, InsertReq, Book}
+import skeleton.store.entity.{BooksReq, IdRsp, InsertReq, Book}
 import skeleton.util.ErrorMsg
 import spray.http.StatusCodes.{Created, OK}
 
-class BooksRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with MockitoSugar with ScalatestRouteTest {
+class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with MockitoSugar with ScalatestRouteTest {
 
   var mockMsgHandler: MockMsgHandler = _
 
-  val testBooksRoute = new BooksRoute {
+  val testStoreRoute = new StoreRoute {
     implicit def actorRefFactory: ActorRefFactory = system
 
     def handleRestMsg[T](msg: Any)(implicit tag: ClassTag[T]): Future[T] = mockMsgHandler.handleMsg[T](msg)
   }
 
-  def route = testBooksRoute.route
+  def route = testStoreRoute.route
 
   before {
     mockMsgHandler = mock[MockMsgHandler]
@@ -31,7 +31,7 @@ class BooksRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with Moc
   import spray.httpx.SprayJsonSupport._
   import JsonProtocol._
 
-  "The books route" should "allow a user to create a new book via POST to /books" in {
+  "The store route" should "allow a user to create a new book via POST to /books" in {
     val newBook = Book(None, "test-book", 1)
     val newBookId = 1L
     when(mockMsgHandler.handleMsg[Either[Long, ErrorMsg]](InsertReq(newBook))) thenReturn Future.successful(Left(newBookId))
@@ -42,7 +42,7 @@ class BooksRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with Moc
     }
   }
 
-  it should "allow a user to retrieve all books of a collection via GET to /collections/:id" in {
+  it should "allow a user to retrieve all store of a collection via GET to /collections/:id" in {
     val collectionId = 2
     val testBooks = List(Book(Some(1), "test-book", collectionId))
     when(mockMsgHandler.handleMsg[List[Book]](BooksReq(collectionId))) thenReturn Future.successful(testBooks)

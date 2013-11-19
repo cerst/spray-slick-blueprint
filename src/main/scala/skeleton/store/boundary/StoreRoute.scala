@@ -1,13 +1,13 @@
-package skeleton.books.boundary
+package skeleton.store.boundary
 
 import spray.http.StatusCodes.{Created, BadRequest, NotFound, OK}
 import spray.routing.HttpService
 import scala.concurrent.Future
 import scala.reflect.ClassTag
-import skeleton.books.entity._
+import skeleton.store.entity._
 import skeleton.util.ErrorMsg
 
-trait BooksRoute extends HttpService {
+trait StoreRoute extends HttpService {
 
   import spray.httpx.SprayJsonSupport._
   import JsonProtocol._

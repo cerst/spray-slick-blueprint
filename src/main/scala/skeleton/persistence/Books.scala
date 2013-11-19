@@ -3,9 +3,9 @@ package skeleton.persistence
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ForeignKeyAction.Cascade
 import skeleton.util.ErrorMsg
-import skeleton.books.entity.Book
+import skeleton.store.entity.Book
 
-object Books extends Table[Book]("books") {
+object Books extends Table[Book]("store") {
 
   def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
 
