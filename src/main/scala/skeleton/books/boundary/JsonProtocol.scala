@@ -1,8 +1,7 @@
-package skeleton.boundary
+package skeleton.books.boundary
 
 import spray.json.DefaultJsonProtocol
-import skeleton.entity.Book
-import skeleton.messages.IdRsp
+import skeleton.books.entity.{IdRsp, Book}
 
 object JsonProtocol extends DefaultJsonProtocol {
 

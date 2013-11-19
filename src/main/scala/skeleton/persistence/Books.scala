@@ -1,10 +1,9 @@
-package skeleton.entity
+package skeleton.persistence
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ForeignKeyAction.Cascade
-import skeleton.messages.ErrorMsgs
-
-case class Book(id: Option[Long], title: String, collectionId: Long) extends Entity
+import skeleton.util.ErrorMsg
+import skeleton.books.entity.Book
 
 object Books extends Table[Book]("books") {
 
@@ -28,9 +27,9 @@ object Books extends Table[Book]("books") {
   }
     )
 
-  def insertWithGenId(b: Book)(implicit session: Session): Either[Long, String] = {
+  def insertWithGenId(b: Book)(implicit session: Session): Either[Long, ErrorMsg] = {
     if (Collections notExistsFor b.collectionId)
-      Right(ErrorMsgs.noCollectionForId)
+      Right(ErrorMsg noCollectionForId b.collectionId)
     else
       Left(Books.withGenId insert b)
   }

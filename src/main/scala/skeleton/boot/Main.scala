@@ -3,14 +3,13 @@ package skeleton.boot
 import akka.actor.{Props, ActorSystem}
 import spray.can.Http
 import akka.io.IO
-import skeleton.boundary.RestRouteActor
-import skeleton.util.DbProvider
+import skeleton.persistence.DbProvider
 
 object Main extends App {
 
   implicit val system = ActorSystem("THE-SYSTEM")
 
-  val service = system.actorOf(Props[RestRouteActor], "route")
+  val service = system.actorOf(Props[DispatchRouteActor], "dispatch-route")
 
   args.find(_ == "resetDb") match {
     case Some(s) => DbProvider init true

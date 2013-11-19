@@ -1,8 +1,7 @@
-package skeleton.util
+package skeleton.persistence
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.StaticQuery
-import skeleton.entity.{Books, Collections}
 import Database.threadLocalSession
 import com.typesafe.config.ConfigFactory
 import com.mchange.v2.c3p0.ComboPooledDataSource
@@ -11,7 +10,7 @@ object DbProvider {
 
   val conf = ConfigFactory load()
 
-  private val database = {
+  private val (dataSource, database) = {
     val dbConf = conf getConfig "database"
     def read(s: String): String = dbConf getString s
     val ds = new ComboPooledDataSource
@@ -19,7 +18,7 @@ object DbProvider {
     ds setDriverClass read("driver")
     ds setUser read("user")
     ds setPassword read("password")
-    Database forDataSource ds
+    (ds, Database forDataSource ds)
   }
 
   def get = database
@@ -38,6 +37,10 @@ object DbProvider {
         }
       }
     }
+  }
+
+  def shutdown(): Unit = {
+    dataSource close()
   }
 
 }
