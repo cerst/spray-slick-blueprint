@@ -1,10 +1,10 @@
 package skeleton.persistence
 
 import scala.slick.driver.PostgresDriver.simple._
-import skeleton.store.entity.Collection
 
+case class Collection(id: Option[Long], title: String)
 
-object Collections extends Table[Collection]("collections") {
+class Collections(tag: Tag) extends Table[Collection](tag, "collections") {
 
   def id = column[Long]("id", O.AutoInc)
 
@@ -12,13 +12,12 @@ object Collections extends Table[Collection]("collections") {
 
   def pk = primaryKey("collections_id_pk", id)
 
-  def * = id.? ~ title <>(Collection, Collection.unapply _)
+  def * = (id.?, title) <>(Collection.tupled, Collection.unapply)
 
-  def notExistsFor(id: Long)(implicit session: Session): Boolean = !existsForId(id).firstOption.getOrElse(false)
+}
 
-  protected val existsForId = for {
-    id <- Parameters[Long]
-    c <- Collections where (_.id === id)
-  } yield c.exists
-
+object collections extends TableQuery(new Collections(_)) {
+  val notExistsByIdCompiled = Compiled {
+    (id: Column[Long]) => books.filter(_.id === id).exists
+  }
 }

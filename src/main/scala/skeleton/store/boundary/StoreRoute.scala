@@ -4,8 +4,9 @@ import spray.http.StatusCodes.{Created, BadRequest, NotFound, OK}
 import spray.routing.HttpService
 import scala.concurrent.Future
 import scala.reflect.ClassTag
-import skeleton.store.entity._
-import skeleton.util.ErrorMsg
+import skeleton.util.{ErrorMsg, IdRsp}
+import skeleton.persistence.Book
+import skeleton.store.control.BooksDbFacadeActor.{Insert, FindBooksBy}
 
 trait StoreRoute extends HttpService {
 
@@ -20,14 +21,14 @@ trait StoreRoute extends HttpService {
     get {
       path("collections" / LongNumber) {
         collectionId => complete {
-          (OK, handleRestMsg[List[Book]](BooksReq(collectionId)))
+          (OK, handleRestMsg[List[Book]](FindBooksBy(collectionId)))
         }
       }
     } ~ post {
       path("books") {
         entity(as[Book]) {
           book => {
-            ctx => handleRestMsg[Either[Long, ErrorMsg]](InsertReq(book)).onSuccess {
+            ctx => handleRestMsg[Either[Long, ErrorMsg]](Insert(book)).onSuccess {
               case Left(id) => ctx.complete(Created, IdRsp(id))
               case Right(error) => if (error.is404) ctx complete NotFound else ctx complete(BadRequest, error.content)
             }

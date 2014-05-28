@@ -8,9 +8,10 @@ import scala.reflect.ClassTag
 import scala.concurrent.Future
 import akka.actor.ActorRefFactory
 import skeleton.testutil.MockMsgHandler
-import skeleton.store.entity.{BooksReq, IdRsp, InsertReq, Book}
-import skeleton.util.ErrorMsg
+import skeleton.util.{IdRsp, ErrorMsg}
 import spray.http.StatusCodes.{Created, OK}
+import skeleton.persistence.Book
+import skeleton.store.control.BooksDbFacadeActor.{FindBooksBy, Insert}
 
 class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with MockitoSugar with ScalatestRouteTest {
 
@@ -34,7 +35,7 @@ class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with Moc
   "The store route" should "allow a user to create a new book via POST to /books" in {
     val newBook = Book(None, "test-book", 1)
     val newBookId = 1L
-    when(mockMsgHandler.handleMsg[Either[Long, ErrorMsg]](InsertReq(newBook))) thenReturn Future.successful(Left(newBookId))
+    when(mockMsgHandler.handleMsg[Either[Long, ErrorMsg]](Insert(newBook))) thenReturn Future.successful(Left(newBookId))
 
     Post("/books", newBook) ~> route ~> check {
       status should equal(Created)
@@ -45,7 +46,7 @@ class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with Moc
   it should "allow a user to retrieve all store of a collection via GET to /collections/:id" in {
     val collectionId = 2
     val testBooks = List(Book(Some(1), "test-book", collectionId))
-    when(mockMsgHandler.handleMsg[List[Book]](BooksReq(collectionId))) thenReturn Future.successful(testBooks)
+    when(mockMsgHandler.handleMsg[List[Book]](FindBooksBy(collectionId))) thenReturn Future.successful(testBooks)
 
     Get("/collections/" + collectionId) ~> route ~> check {
       status should equal(OK)

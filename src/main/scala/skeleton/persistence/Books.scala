@@ -1,11 +1,11 @@
 package skeleton.persistence
 
 import scala.slick.driver.PostgresDriver.simple._
-import scala.slick.lifted.ForeignKeyAction.Cascade
-import skeleton.util.ErrorMsg
-import skeleton.store.entity.Book
+import scala.slick.model.ForeignKeyAction.Cascade
 
-object Books extends Table[Book]("store") {
+case class Book(id: Option[Long], title: String, collectionId: Long)
+
+class Books(tag: Tag) extends Table[Book](tag, "books") {
 
   def id = column[Long]("id", O.AutoInc)
 
@@ -15,30 +15,18 @@ object Books extends Table[Book]("store") {
 
   def pk = primaryKey("books_id_pk", id)
 
-  def fk_collectionId = foreignKey("books_collection_id_fk", collectionId, Collections)(_.id, onDelete = Cascade)
+  def fk_collectionId = foreignKey("books_collection_id_fk", collectionId, collections)(_.id, onDelete = Cascade)
 
-  def * = id.? ~ title ~ collectionId <>(Book, Book.unapply _)
+  def * = (id.?, title, collectionId) <>(Book.tupled, Book.unapply)
 
-  // shim to make auto inc work with postgres
-  def withGenId = (title ~ collectionId) <>( {
-    (t, c) => Book(None, t, c)
-  }, {
-    (b: Book) => Some(b.title, b.collectionId)
-  }
-    )
+}
 
-  def insertWithGenId(b: Book)(implicit session: Session): Either[Long, ErrorMsg] = {
-    if (Collections notExistsFor b.collectionId)
-      Right(ErrorMsg noCollectionForId b.collectionId)
-    else
-      Left(Books.withGenId insert b)
+object books extends TableQuery(new Books(_)) {
+  def insertWithGenId(book: Book)(implicit session: Session): Long = books returning books.map(_.id) insert book
+
+  val byCollectionIdCompiled = Compiled {
+    (collectionId: Column[Long]) => books filter (_.collectionId === collectionId)
   }
 
-  def findFor(collectionId: Long)(implicit session: Session): List[Book] = forCollectionId(collectionId) list()
-
-  private val forCollectionId = for {
-    collectionId <- Parameters[Long]
-    b <- Books where (_.collectionId === collectionId)
-  } yield b
 
 }
