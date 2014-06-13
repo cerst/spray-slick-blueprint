@@ -1,12 +1,12 @@
-package skeleton.store.boundary
+package skeleton.boundary
 
 import spray.json.DefaultJsonProtocol
 import skeleton.persistence.Book
-import skeleton.util.IdRsp
+import skeleton.control.DbFacadeActor
 
 object JsonProtocol extends DefaultJsonProtocol {
 
   implicit val bookFormat = jsonFormat3(Book)
-  implicit val idRspFormat = jsonFormat1(IdRsp)
+  implicit val createdFormat = jsonFormat1(DbFacadeActor.Created)
 
 }

@@ -2,8 +2,8 @@ package skeleton.boot
 
 import spray.routing.{RequestContext, HttpService}
 import akka.actor.Actor
-import skeleton.store.control.BooksDbFacadeActor
-import skeleton.store.boundary.StoreRouteActor
+import skeleton.control.DbFacadeActor
+import skeleton.boundary.RouteActor
 
 trait DispatchRoute extends HttpService {
 
@@ -11,9 +11,7 @@ trait DispatchRoute extends HttpService {
 
   private[boot] val route = {
     pathPrefix("api") {
-      pathPrefix("store") {
-        handleBooksReq
-      }
+      handleBooksReq
     }
   }
 }
@@ -24,9 +22,9 @@ class DispatchRouteActor extends Actor with DispatchRoute {
 
   def receive = runRoute(route)
 
-  val booksDbFacade = context actorOf(BooksDbFacadeActor.props, "store-dbFacade")
+  val dbFacade = context actorOf(DbFacadeActor.props, "dbFacade")
 
-  val storeRoute = context actorOf(StoreRouteActor props booksDbFacade, "store-route")
+  val routeActor = context actorOf(RouteActor props dbFacade, "route")
 
-  def handleBooksReq(rc: RequestContext): Unit = storeRoute ! rc
+  def handleBooksReq(rc: RequestContext): Unit = routeActor ! rc
 }

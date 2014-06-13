@@ -23,17 +23,18 @@ object DbProvider {
   def get = database
 
   def init(reset: Boolean): Unit = {
-    DbProvider.get withSession {
+    database withSession {
       implicit session =>
         if (reset)
           StaticQuery updateNA "drop schema public cascade;create schema public;" execute()
         try {
           // simple check: access a table: if an exception occurs we assume that this table and all other do not exist
-          (books filter (_.id === 0L)).firstOption
+          Stores.notExistsByIdCompiled(1).run
         } catch {
           case e: Exception =>
-            val ddls = collections.ddl ++ books.ddl
+            val ddls = Stores.ddl ++ Books.ddl
             ddls.create
+            Stores.insert(Store(Some(1), "Store 1"))
         }
     }
   }

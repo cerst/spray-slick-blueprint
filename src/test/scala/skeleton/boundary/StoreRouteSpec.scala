@@ -1,4 +1,4 @@
-package skeleton.store.boundary
+package skeleton.boundary
 
 import org.scalatest.{BeforeAndAfter, Matchers, FlatSpec}
 import spray.testkit.ScalatestRouteTest
@@ -8,22 +8,22 @@ import scala.reflect.ClassTag
 import scala.concurrent.Future
 import akka.actor.ActorRefFactory
 import skeleton.testutil.MockMsgHandler
-import skeleton.util.{IdRsp, ErrorMsg}
 import spray.http.StatusCodes.{Created, OK}
 import skeleton.persistence.Book
-import skeleton.store.control.BooksDbFacadeActor.{FindBooksBy, Insert}
+import skeleton.control.DbFacadeActor.{FindBooksBy, Insert}
+import skeleton.control.DbFacadeActor
 
 class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with MockitoSugar with ScalatestRouteTest {
 
   var mockMsgHandler: MockMsgHandler = _
 
-  val testStoreRoute = new StoreRoute {
+  val testRoute = new Route {
     implicit def actorRefFactory: ActorRefFactory = system
 
     def handleRestMsg[T](msg: Any)(implicit tag: ClassTag[T]): Future[T] = mockMsgHandler.handleMsg[T](msg)
   }
 
-  def route = testStoreRoute.route
+  def route = testRoute.route
 
   before {
     mockMsgHandler = mock[MockMsgHandler]
@@ -35,20 +35,20 @@ class StoreRouteSpec extends FlatSpec with Matchers with BeforeAndAfter with Moc
   "The store route" should "allow a user to create a new book via POST to /books" in {
     val newBook = Book(None, "test-book", 1)
     val newBookId = 1L
-    when(mockMsgHandler.handleMsg[Either[Long, ErrorMsg]](Insert(newBook))) thenReturn Future.successful(Left(newBookId))
+    when(mockMsgHandler.handleMsg[DbFacadeActor.Created](Insert(newBook))) thenReturn Future.successful(DbFacadeActor.Created(newBookId))
 
     Post("/books", newBook) ~> route ~> check {
       status should equal(Created)
-      responseAs[IdRsp] should equal(IdRsp(newBookId))
+      responseAs[DbFacadeActor.Created] should equal(DbFacadeActor.Created(newBookId))
     }
   }
 
   it should "allow a user to retrieve all store of a collection via GET to /collections/:id" in {
-    val collectionId = 2
-    val testBooks = List(Book(Some(1), "test-book", collectionId))
-    when(mockMsgHandler.handleMsg[List[Book]](FindBooksBy(collectionId))) thenReturn Future.successful(testBooks)
+    val storeId = 2
+    val testBooks = List(Book(Some(1), "test-book", storeId))
+    when(mockMsgHandler.handleMsg[Seq[Book]](FindBooksBy(storeId))) thenReturn Future.successful(testBooks)
 
-    Get("/collections/" + collectionId) ~> route ~> check {
+    Get("/stores/" + storeId) ~> route ~> check {
       status should equal(OK)
       responseAs[List[Book]] should equal(testBooks)
     }

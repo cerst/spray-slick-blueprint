@@ -18,4 +18,9 @@ object Main extends App {
 
   IO(Http) ! Http.Bind(service, "localhost", port = 8080)
 
+  sys addShutdownHook {
+    system shutdown()
+    DbProvider shutdown()
+  }
+
 }
