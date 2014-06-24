@@ -2,7 +2,7 @@ package skeleton.util
 
 import spray.util.LoggingContext
 import spray.http.StatusCode
-import spray.http.StatusCodes.{BadRequest, NotFound}
+import spray.http.StatusCodes.{BadRequest, InternalServerError, NotFound}
 import spray.routing.{HttpService, ExceptionHandler}
 import skeleton.exception.PersistenceError
 import java.util.concurrent.TimeUnit.SECONDS
@@ -19,7 +19,8 @@ trait RouteUtil {
   implicit def exceptionHandler(implicit log: LoggingContext) = {
     def mapToCode(error: PersistenceError): StatusCode = error match {
       case PersistenceError.NotFound => NotFound
-      case _ => BadRequest
+      case PersistenceError.Validation => BadRequest
+      case _ => InternalServerError
     }
 
     ExceptionHandler {
